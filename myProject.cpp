@@ -88,11 +88,6 @@ public:
         Eigen::VectorXd d = -mKd * dq;
         
         mForces += p + d;
-        
-        for(int i=0;i<57;i++){
-            std::cout<<mForces[i]<<", ";
-        }
-        std::cout<<std::endl;
         mBiped->setForces(mForces);
     }
     
@@ -123,23 +118,6 @@ public:
             }
             fputs("\n",fmass);
         }
-        //get forces
-        Eigen::VectorXd f1=mBiped->getCoriolisAndGravityForces();
-        for(int i=0;i<57;i++){
-            char s [100];
-            sprintf(s,"%f\t",f1.row(i)[0]);
-            fputs(s,fcg);
-        }
-        fputs("\n",fcg);
-        
-        Eigen::VectorXd f2=mBiped->getConstraintForces();
-        for(int i=0;i<57;i++){
-            char s [100];
-            sprintf(s,"%f\t",f2.row(i)[0]);
-            fputs(s,fcons);
-        }
-        fputs("\n",fcons);
-        
         
         Eigen::MatrixXd invM = (mBiped->getMassMatrix()
                                 + mKd * mBiped->getTimeStep()).inverse();
@@ -147,8 +125,7 @@ public:
         -mKp * (q + dq * mBiped->getTimeStep() - bvh.frame[n]);
         Eigen::VectorXd d = -mKd * dq;
         
-        Eigen::VectorXd qddot =invM * (-mBiped->getCoriolisAndGravityForces()
-                + p + d + mBiped->getConstraintForces());
+        Eigen::VectorXd qddot =invM * (p + d);
         for(int i=0;i<57;i++){
             char s [100];
             sprintf(s,"%f\t",qddot.row(i)[0]);
